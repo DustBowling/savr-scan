@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Camera Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        video { max-width: 100%; height: 400px; border: 2px solid #ccc; }
+        button { padding: 10px 20px; margin: 10px; font-size: 16px; }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+    </style>
+</head>
+<body>
+    <h1>📱 Camera Test</h1>
+    <p>This will help us debug your camera issues.</p>
+    
+    <div id="status" class="info">Click "Start Camera" to begin test...</div>
+    
+    <br>
+    <button onclick="startCamera()">📹 Start Camera</button>
+    <button onclick="takePhoto()" id="captureBtn" disabled>📸 Take Photo</button>
+    <button onclick="stopCamera()">⏹️ Stop Camera</button>
+    
+    <br><br>
+    <video id="video" autoplay playsinline muted style="display:none;"></video>
+    <canvas id="canvas" style="display:none;"></canvas>
+    
+    <div id="result"></div>
+
+    <script>
+        let stream = null;
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const status = document.getElementById('status');
+        const captureBtn = document.getElementById('captureBtn');
+        const result = document.getElementById('result');
+
+        function updateStatus(message, type = 'info') {
+            status.innerHTML = message;
+            status.className = type;
+            console.log('📱 Camera Test:', message);
+        }
+
+        async function startCamera() {
+            try {
+                updateStatus('🔍 Requesting camera access...', 'info');
+                
+                // Request camera with same settings as your app
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: 'environment', // Back camera on mobile
+                        width: { ideal: 1920, max: 1920 },
+                        height: { ideal: 1080, max: 1080 }
+                    }
+                });
+                
+                updateStatus('✅ Camera access granted!', 'success');
+                
+                video.srcObject = stream;
+                video.style.display = 'block';
+                captureBtn.disabled = false;
+                
+                video.onloadedmetadata = () => {
+                    updateStatus(`📹 Camera active: ${video.videoWidth}x${video.videoHeight}`, 'success');
+                };
+                
+            } catch (error) {
+                updateStatus(`❌ Camera error: ${error.name} - ${error.message}`, 'error');
+                console.error('Camera error:', error);
+                
+                // Provide specific help based on error type
+                if (error.name === 'NotAllowedError') {
+                    updateStatus('❌ Camera permission denied. Please allow camera access and try again.', 'error');
+                } else if (error.name === 'NotFoundError') {
+                    updateStatus('❌ No camera found. Please check if a camera is connected.', 'error');
+                } else if (error.name === 'NotSupportedError') {
+                    updateStatus('❌ Camera not supported in this browser. Try Chrome or Edge.', 'error');
+                }
+            }
+        }
+
+        function takePhoto() {
+            try {
+                updateStatus('📸 Taking photo...', 'info');
+                
+                // Set canvas size to match video
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                
+                // Draw current video frame to canvas
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0);
+                
+                // Convert to blob
+                canvas.toBlob((blob) => {
+                    if (blob) {
+                        updateStatus(`✅ Photo captured! Size: ${Math.round(blob.size/1024)}KB`, 'success');
+                        
+                        // Show the captured image
+                        const url = URL.createObjectURL(blob);
+                        result.innerHTML = `
+                            <h3>📸 Captured Photo:</h3>
+                            <img src="${url}" style="max-width: 300px; border: 2px solid green; border-radius: 10px;">
+                            <p>✅ Photo capture working perfectly!</p>
+                        `;
+                        
+                        // Test OCR endpoint
+                        testOCREndpoint(blob);
+                        
+                    } else {
+                        updateStatus('❌ Failed to create photo blob', 'error');
+                    }
+                }, 'image/jpeg', 0.9);
+                
+            } catch (error) {
+                updateStatus(`❌ Photo capture error: ${error.message}`, 'error');
+                console.error('Photo capture error:', error);
+            }
+        }
+
+        async function testOCREndpoint(blob) {
+            try {
+                updateStatus('🧪 Testing OCR endpoint...', 'info');
+                
+                // Test if OCR endpoint is available
+                const testResponse = await fetch('/api/google-vision-ocr', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ test: true })
+                });
+                
+                const testData = await testResponse.json();
+                
+                if (testData.available) {
+                    updateStatus('✅ Google Vision API is available and ready!', 'success');
+                } else {
+                    updateStatus('⚠️ Google Vision not configured, will use Tesseract OCR (slower but works)', 'info');
+                }
+                
+            } catch (error) {
+                updateStatus('❌ OCR endpoint test failed', 'error');
+                console.error('OCR test error:', error);
+            }
+        }
+
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+                video.style.display = 'none';
+                captureBtn.disabled = true;
+                updateStatus('⏹️ Camera stopped', 'info');
+            }
+        }
+
+        // Check for camera support on page load
+        window.onload = function() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                updateStatus('❌ Camera API not supported in this browser. Please use Chrome, Edge, or Firefox.', 'error');
+            } else {
+                updateStatus('✅ Camera API supported. Click "Start Camera" to test.', 'success');
+            }
+        };
+    </script>
+</body>
+</html> 
