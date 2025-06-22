@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SAVR-SCAN
 
-## Getting Started
+SAVR-SCAN is a modern web application built with Next.js that helps users digitize and analyze their receipts using advanced OCR (Optical Character Recognition) and AI technologies. The app features both file upload and live scanning capabilities to make receipt digitization as convenient as possible.
 
-First, run the development server:
+## Features
+
+- **Live Receipt Scanning**: Real-time camera-based receipt scanning
+- **Image Upload**: Support for uploading receipt images
+- **Advanced OCR**: Powered by Google Vision OCR for accurate text extraction
+- **AI Receipt Parsing**: Intelligent parsing of receipt data including:
+  - Store information
+  - Item details
+  - Prices
+  - Dates
+- **Image Preprocessing**: Automatic image enhancement for better OCR results
+- **Firebase Integration**: Cloud storage and database for receipt management
+- **Modern UI**: Built with React and Tailwind CSS
+
+## Tech Stack
+
+- Next.js 14
+- React 18
+- Firebase
+- TypeScript
+- Tailwind CSS
+- Canvas API for image processing
+
+## Prerequisites
+
+- Node.js (Latest LTS version recommended)
+- npm or yarn
+- Firebase account and project setup
+- Google Cloud Vision API credentials
+
+## Installation
+
+1. Clone the repository:
+```bash
+git clone [your-repo-url]
+cd savr-scan
+```
+
+2. Install dependencies:
+```bash
+npm install
+# or
+yarn install
+```
+
+3. Set up your environment variables:
+Create a `.env.local` file in the root directory and add your Firebase and Google Cloud credentials:
+```env
+NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+GOOGLE_CLOUD_VISION_API_KEY=your_vision_api_key
+```
+
+## Development
+
+Run the development server:
 
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `/app` - Next.js app directory
+  - `/api` - API routes including Google Vision OCR integration
+  - `/components` - React components including LiveScanner
+  - `/lib` - Utility functions and business logic
+  - `/receipts` - Receipt-related pages and components
 
-## Learn More
+## Contributing
 
-To learn more about Next.js, take a look at the following resources:
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## License
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This project is licensed under the terms of the license included in the repository.
 
-## Deploy on Vercel
+## Support
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+For support, please open an issue in the GitHub repository.
