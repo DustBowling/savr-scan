@@ -3,6 +3,7 @@
 ## Overview
 This guide explains how to set up the live camera scanning feature that uses Google Cloud Vision API for high-accuracy OCR processing of receipts.
 
+
 ## Features
 - 📱 **Live Camera Feed**: Real-time camera access with receipt detection
 - 🎯 **Document Detection**: Automatic receipt boundary detection with visual overlays
@@ -25,7 +26,7 @@ This guide explains how to set up the live camera scanning feature that uses Goo
    - Click "Create Credentials" > "API Key"
    - Copy the API key
 
-### 2. Environment Variables
+### 2.s
 Create a `.env.local` file in your project root with:
 
 ```env
